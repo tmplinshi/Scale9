@@ -37,9 +37,9 @@ g_hBrush[hEdit2] := g_hBrush[hEdit1] ; Edit2 has the same size as Edit1
 g_hbrush[hEdit3] := CreateHBrush(hEdit3, SizeArray, ImageObj, 0xFF1B435D)
 
 ; EM_SETMARGIN
-EditSetMargin(hEdit1, 7, 7)
-EditSetMargin(hEdit2, 7, 7)
-EditSetMargin(hEdit3, 7, 7)
+EditSetMargin(hEdit1, 7, 7, 7, 7)
+EditSetMargin(hEdit2, 7, 7, 7, 7)
+EditSetMargin(hEdit3, 7, 7, 7, 7)
 
 Gui, Show,, Scale9 Example 2
 RedrawWindow(hGui)
