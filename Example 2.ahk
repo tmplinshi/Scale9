@@ -12,7 +12,7 @@ EditStyles := "+Multi -E0x200 -0x200000 -Wrap -WantReturn"
 ; -E0x200   Remove edit control's border
 ; -0x200000 Remove scrollbar
 
-Gui, +HWNDhGUI
+Gui, +HWNDhGUI +LastFound
 Gui, Margin, 60, 30
 Gui, Color, 0x1B435D
 Gui, Font, s12 c0x9EBACA, Microsoft YaHei UI
@@ -42,7 +42,7 @@ EditSetMargin(hEdit2, 7, 7, 7, 7)
 EditSetMargin(hEdit3, 7, 7, 7, 7)
 
 Gui, Show,, Scale9 Example 2
-RedrawWindow(hGui)
+WinSet, Redraw
 Return
 
 GuiClose:
@@ -52,7 +52,7 @@ WM_COMMAND(wParam, lParam) {
 	static EN_SETFOCUS := 0x0100, EN_KILLFOCUS := 0x0200, EN_CHANGE := 0x0300
 	nCode := wParam >> 16
 	If (nCode = EN_KILLFOCUS || nCode = EN_CHANGE)
-		RedrawWindow(lParam)
+		DllCall("InvalidateRect", "ptr", lParam, "ptr", 0, "int", 1)
 }
 
 WM_CTLCOLOREDIT(wParam, lParam) {
@@ -90,10 +90,6 @@ CreateHBrush(hEdit, SizeArray, ImageObj, BkColor := 0xFFFFFFFF) {
 		DllCall("DeleteObject", "ptr", hBitmap)
 	}
 	Return oBrush
-}
-
-RedrawWindow(hWnd) {
-	DllCall("RedrawWindow", "ptr", hWnd, "ptr", 0, "ptr", 0, "uint", 1029) ; 1029 = RDW_ERASE | RDW_FRAME | RDW_INVALIDATE
 }
 
 EditSetMargin(hEdit, mLeft:=0, mTop:=0, mRight:=0, mBottom:=0) {
