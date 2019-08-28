@@ -72,21 +72,21 @@ class Scale9
 	}
 
 	GetNineArea(ImageWidth, ImageHeight, LeftSize, TopSize, RightSize, BottomSize) {
-		centerW := ImageWidth - LeftSize - RightSize
-		centerH := ImageHeight - TopSize - BottomSize
+		centerW := ImageWidth  - LeftSize - RightSize
+		centerH := ImageHeight - TopSize  - BottomSize
 
 		o := {}
 
-		o.top1 := [0,              0,  LeftSize, TopSize]
-		o.top2 := [LeftSize,         0, centerW, TopSize]
+		o.top1 := [0               , 0, LeftSize , TopSize]
+		o.top2 := [LeftSize        , 0, centerW  , TopSize]
 		o.top3 := [LeftSize+centerW, 0, RightSize, TopSize]
 
-		o.center1 := [0             , TopSize, LeftSize, centerH]
-		o.center2 := [LeftSize        , TopSize, centerW, centerH]
+		o.center1 := [0               , TopSize, LeftSize , centerH]
+		o.center2 := [LeftSize        , TopSize, centerW  , centerH]
 		o.center3 := [LeftSize+centerW, TopSize, RightSize, centerH]
 
-		o.bottom1 := [0             , TopSize+centerH, LeftSize, BottomSize]
-		o.bottom2 := [LeftSize        , TopSize+centerH, centerW, BottomSize]
+		o.bottom1 := [0               , TopSize+centerH, LeftSize , BottomSize]
+		o.bottom2 := [LeftSize        , TopSize+centerH, centerW  , BottomSize]
 		o.bottom3 := [LeftSize+centerW, TopSize+centerH, RightSize, BottomSize]
 
 		return o
@@ -97,7 +97,7 @@ class Scale9
 		for k, v in oNineArea
 			o[k] := v.Clone()
 
-		centerW := NewImageWidth - o.top1.3 - o.top3.3
+		centerW := NewImageWidth  - o.top1.3 - o.top3.3
 		centerH := NewImageHeight - o.top1.4 - o.bottom1.4
 
 		o.top2.3    := centerW
