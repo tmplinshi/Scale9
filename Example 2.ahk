@@ -1,4 +1,4 @@
-﻿#SingleInstance, force
+﻿#SingleInstance force
 #Include <Gdip_All>
 SetBatchLines -1
 UseGDIP() ; by just me - https://www.autohotkey.com/boards/viewtopic.php?t=8050
@@ -25,16 +25,16 @@ Gui, Add, Edit, xm y+10 hwndhEdit3 h100 w300 +Multi -E0x200 -0x200000 -Wrap +Rea
 
 PostMessage, 0xCC, Asc("*"), 0,, ahk_id %hEdit2%
 
-; Create hBrush
+; Create brushes
 SizeArray := [3, 3, 3, 3]
 ImageObj := { "normal"  : "image\edit-normal.png"
-             , "focus"   : "image\edit-focus.png"
-             , "disabled": "image\edit-disabled.png" }
+            , "focus"   : "image\edit-focus.png"
+            , "disabled": "image\edit-disabled.png" }
 
-global g_hBrush := {}
-g_hBrush[hEdit1] := CreateHBrush(hEdit1, SizeArray, ImageObj, 0xFF1B435D)
-g_hBrush[hEdit2] := g_hBrush[hEdit1] ; Edit2 has the same size as Edit1
-g_hbrush[hEdit3] := CreateHBrush(hEdit3, SizeArray, ImageObj, 0xFF1B435D)
+global g_brush := {}
+g_brush[hEdit1] := CreateBrushes(hEdit1, SizeArray, ImageObj, 0xFF1B435D)
+g_brush[hEdit2] := g_brush[hEdit1] ; Edit2 has the same size as Edit1
+g_brush[hEdit3] := CreateBrushes(hEdit3, SizeArray, ImageObj, 0xFF1B435D)
 
 ; EM_SETMARGIN
 EditSetMargin(hEdit1, 7, 7, 7, 7)
@@ -62,7 +62,7 @@ WM_CTLCOLOREDIT(wParam, lParam) {
 
 	DllCall("SetBkMode", "ptr", wParam, "uint", 1)
 	DllCall("SetTextColor", "ptr", wParam, "uint", 0xffffff)
-	Return g_hBrush[lParam][Status]
+	Return g_brush[lParam][Status]
 }
 
 WM_CTLCOLORSTATIC(wParam, lParam) {
@@ -74,13 +74,13 @@ WM_CTLCOLORSTATIC(wParam, lParam) {
 	{
 		DllCall("SetTextColor", "ptr", wParam, "uint", 0x7F7056)
 		DllCall("SetBkMode", "ptr", wParam, "int", 1)
-		; Return g_hBrush[lParam]["disabled"]
-		Return g_hBrush[lParam]["normal"] ; The edit-normal.png looks better
+		; Return g_brush[lParam]["disabled"]
+		Return g_brush[lParam]["normal"] ; edit-normal.png looks better
 	}
 }
 
-CreateHBrush(hEdit, SizeArray, ImageObj, BkColor := 0xFFFFFFFF) {
-	GuiControlGet, Ctrl, Pos, %hEdit%
+CreateBrushes(hEdit, SizeArray, ImageObj, BkColor := 0xFFFFFFFF) {
+	WinGetPos,,, CtrlW, CtrlH, ahk_id %hEdit%
 
 	oBrush := {}
 	For Status, ImageFile in ImageObj
@@ -97,15 +97,14 @@ EditSetMargin(hEdit, mLeft:=0, mTop:=0, mRight:=0, mBottom:=0) {
 
 	; SendMessage, 0xB2,, &RECT,, ahk_id %hEdit% ; EM_GETMARGIN
 	DllCall("GetClientRect", "ptr", hEdit, "ptr", &RECT)
-	left   := NumGet(RECT, 0, "Int")
-	top    := NumGet(RECT, 4, "Int")
 	right  := NumGet(RECT, 8, "Int")
-	bottom := NumGet(RECT, 12, "Int")
+	; bottom := NumGet(RECT, 12, "Int")
 
-	NumPut(left + mLeft    , RECT, 0, "Int")
-	NumPut(top + mTop      , RECT, 4, "Int")
-	NumPut(right - mRight  , RECT, 8, "Int")
-	NumPut(bottom - mBottom, RECT, 12, "Int")
+	static dpi := A_ScreenDPI / 96
+	NumPut(0     + Ceil(mLeft*dpi) , RECT, 0, "Int")
+	NumPut(0     + Ceil(mTop*dpi)  , RECT, 4, "Int")
+	NumPut(right - Ceil(mRight*dpi), RECT, 8, "Int")
+	; NumPut(bottom - mBottom, RECT, 12, "Int")
 	SendMessage, 0xB3, 0x0, &RECT,, ahk_id %hEdit% ; EM_SETMARGIN
 }
 
